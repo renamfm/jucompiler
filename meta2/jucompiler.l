@@ -3,15 +3,16 @@
 	// Sergio Machado 2017265620
 
 %{
-	#include <stdlib.h>
-	#include <string.h>
+	//#include <stdlib.h>
+	//#include <string.h>
 	#include "y.tab.h"
-	#include "functions.h"
+	//#include "functions.h"
 
 	#define ADDLINE currentLine++; currentCol = 1;
 	#define ADDCOL currentCol += yyleng;
 
-	char *str = malloc(256*sizeof(char));
+
+	char *str;
 	int flag = 0, flagInvalidChar = 0;
 	int currentLine = 1, currentCol = 1;
 	int commentLine=1, commentCol = 1;
@@ -24,7 +25,7 @@ digit				[1-9]
 letter				[a-zA-Z_$]
 number              {digit0}(({digit0}|"_")*{digit0})*
 
-%X STRING COMMENT COMMENT2
+%X STR COMMENT COMMENT2
 
 %%
 
@@ -32,12 +33,12 @@ number              {digit0}(({digit0}|"_")*{digit0})*
 \n|\r|\r\n												{ADDLINE;}
 
 \"														{BEGIN STRING;strcpy(str, ""); stringLine = currentLine, stringCol = currentCol; ADDCOL;}
-<STRING>\"												{if(flag==1 && flagInvalidChar==0){printf("STRLIT(\"%s\")\n", str);} BEGIN 0; flagInvalidChar=0; ADDCOL;}
-<STRING>\n|\r											{printf("Line %d, col %d: unterminated string literal\n", stringLine, stringCol); BEGIN 0; flagInvalidChar=0; ADDLINE;}
-<STRING>\\(f|n|r|t|\\|\")								{strcat(str, yytext); ADDCOL;}
-<STRING>\\.|\\											{flagInvalidChar=1; printf("Line %d, col %d: invalid escape sequence (%s)\n", currentLine, currentCol, yytext); ADDCOL;}
-<STRING>.												{strcat(str, yytext); ADDCOL;}
-<STRING><<EOF>>											{BEGIN 0; printf("Line %d, col %d: unterminated string literal\n", stringLine, stringCol); ADDCOL;}
+<STR>\"													{if(flag==1 && flagInvalidChar==0){printf("STRLIT(\"%s\")\n", str);} BEGIN 0; flagInvalidChar=0; ADDCOL;}
+<STR>\n|\r												{printf("Line %d, col %d: unterminated string literal\n", stringLine, stringCol); BEGIN 0; flagInvalidChar=0; ADDLINE;}
+<STR>\\(f|n|r|t|\\|\")									{strcat(str, yytext); ADDCOL;}
+<STR>\\.|\\												{flagInvalidChar=1; printf("Line %d, col %d: invalid escape sequence (%s)\n", currentLine, currentCol, yytext); ADDCOL;}
+<STR>.													{strcat(str, yytext); ADDCOL;}
+<STR><<EOF>>											{BEGIN 0; printf("Line %d, col %d: unterminated string literal\n", stringLine, stringCol); ADDCOL;}
 
 "/*"													{BEGIN COMMENT; commentLine =  currentLine; commentCol = currentCol; ADDCOL;}
 <COMMENT>"*/"											{BEGIN 0; ADDCOL;}
@@ -84,7 +85,7 @@ double													{if(flag==1){printf("DOUBLE\n");} ADDCOL; if(flag == 2){retur
 else													{if(flag==1){printf("ELSE\n");} ADDCOL; if(flag == 2){return ELSE;}}
 if														{if(flag==1){printf("IF\n");} ADDCOL; if(flag == 2){return IF;}}
 int														{if(flag==1){printf("INT\n");} ADDCOL; if(flag == 2){return INT;}}
-System"."out"."print									{if(flag==1){printf("PRINT\n");} ADDCOL; if(flag == 2){return PRINT;}}
+System"."out"."printf									{if(flag==1){printf("PRINT\n");} ADDCOL; if(flag == 2){return PRINT;}}
 Integer"."parseInt										{if(flag==1){printf("PARSEINT\n");} ADDCOL; if(flag == 2){return PARSEINT;}}
 public													{if(flag==1){printf("PUBLIC\n");} ADDCOL; if(flag == 2){return PUBLIC;}}
 return													{if(flag==1){printf("RETURN\n");} ADDCOL; if(flag == 2){return RETURN;}}
@@ -105,10 +106,40 @@ while													{if(flag==1){printf("WHILE\n");} ADDCOL; if(flag == 2){return 
 
 %%
 
+int main(int argc,char* argv[]){
+	str = malloc(256*sizeof(char));	
+	if(argv[1] != NULL){
+		if(strcmp(argv[1], "-l") == 0){
+			//analise lexical
+            flag = 1;
+            yylex();
+		}
+		else if(strcmp(argv[1], "-e1") == 0){
+			//erros lexicais
+            yylex(); 
+		}
+		else if(strcmp(argv[1], "-t") == 0){
+			//arvore de sintaxe
+			flag = 2;
+            yyparse();
+            //imprimir depois a arvore
+		}
+		else if(strcmp(argv[1], "-e2") == 0){
+			//erros sintaticos e lexicais
+		}
+	}
+
+	//erros sintaticos e lexicais
+	yyparse();
+
+	free(str);
+	return 0;
+}
+
 int yywrap(){
 	return 1;
 }
 
-void yyerror (const char *s){
-	printf("Some error somewhere");
+void yyerror(char *msg) {
+    printf("%s", msg);
 }

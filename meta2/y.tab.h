@@ -34,7 +34,7 @@
 # define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -45,41 +45,132 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    INTEGER = 258,
-    DOUBLE = 259,
-    CHARACTER = 260,
-    LET = 261,
-    IN = 262,
-    END = 263,
-    WRITE = 264,
-    IDENTIFIER = 265
+    ID = 258,
+    INTLIT = 259,
+    REALLIT = 260,
+    STRLIT = 261,
+    BOOLLIT = 262,
+    AND = 263,
+    ASSIGN = 264,
+    STAR = 265,
+    COMMA = 266,
+    DIV = 267,
+    EQ = 268,
+    GE = 269,
+    GT = 270,
+    LBRACE = 271,
+    LE = 272,
+    LPAR = 273,
+    LSQ = 274,
+    LT = 275,
+    MINUS = 276,
+    MOD = 277,
+    NE = 278,
+    NOT = 279,
+    OR = 280,
+    PLUS = 281,
+    RBRACE = 282,
+    RPAR = 283,
+    RSQ = 284,
+    SEMICOLON = 285,
+    ARROW = 286,
+    LSHIFT = 287,
+    RSHIFT = 288,
+    XOR = 289,
+    BOOL = 290,
+    CLASS = 291,
+    DOTLENGTH = 292,
+    DOUBLE = 293,
+    ELSE = 294,
+    IF = 295,
+    INT = 296,
+    PRINT = 297,
+    PARSEINT = 298,
+    PUBLIC = 299,
+    RETURN = 300,
+    STATIC = 301,
+    STRING = 302,
+    VOID = 303,
+    WHILE = 304,
+    RESERVED = 305
   };
 #endif
 /* Tokens.  */
-#define INTEGER 258
-#define DOUBLE 259
-#define CHARACTER 260
-#define LET 261
-#define IN 262
-#define END 263
-#define WRITE 264
-#define IDENTIFIER 265
+#define ID 258
+#define INTLIT 259
+#define REALLIT 260
+#define STRLIT 261
+#define BOOLLIT 262
+#define AND 263
+#define ASSIGN 264
+#define STAR 265
+#define COMMA 266
+#define DIV 267
+#define EQ 268
+#define GE 269
+#define GT 270
+#define LBRACE 271
+#define LE 272
+#define LPAR 273
+#define LSQ 274
+#define LT 275
+#define MINUS 276
+#define MOD 277
+#define NE 278
+#define NOT 279
+#define OR 280
+#define PLUS 281
+#define RBRACE 282
+#define RPAR 283
+#define RSQ 284
+#define SEMICOLON 285
+#define ARROW 286
+#define LSHIFT 287
+#define RSHIFT 288
+#define XOR 289
+#define BOOL 290
+#define CLASS 291
+#define DOTLENGTH 292
+#define DOUBLE 293
+#define ELSE 294
+#define IF 295
+#define INT 296
+#define PRINT 297
+#define PARSEINT 298
+#define PUBLIC 299
+#define RETURN 300
+#define STATIC 301
+#define STRING 302
+#define VOID 303
+#define WHILE 304
+#define RESERVED 305
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 27 "ficha4.2.y" /* yacc.c:1909  */
+#line 54 "jucompiler.y" /* yacc.c:1909  */
 
-    char *id;
-    is_program* ip;
-    is_vardec_list* ivl;
-    is_vardec* iv;
-    is_statement_list* isl;
-    is_statement* is;
+	/*Program *p:
+	Declarations *dec;
+	MethodDeclaration *mdec;
+	FieldDeclaration *fdec;
+	CommaOrId *cmid;
+	Type *tp;
+	MethodHeader *mh;
+	FormalParams *fpm;
+	CommaOrTypeOrId cmtid;
+	MethodBody *mbd;
+	StatemOrVardec *stvd;
+	Statements *st;
+	MethodInvocation *miv;
+	CommaOrExpr *cmexpr;
+	Assignment *asgn;
+	Expr *expr;*/
+    //char *id;
 
-#line 83 "y.tab.h" /* yacc.c:1909  */
+#line 174 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
