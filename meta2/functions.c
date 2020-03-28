@@ -1,3 +1,4 @@
+/*
 #include "structures.h"
 #include "functions.h"
 #include <stdlib.h>
@@ -37,7 +38,7 @@ is_vardec* insert_integer_dec(char* id)
 	is_integer_dec* iid=(is_integer_dec*)malloc(sizeof(is_integer_dec));
 	
 	iid->id=(char*)strdup(id);  /* Por precaucao. Seria apenas necessario copiar o ponteiro, pois o strdup ja foi feito atras*/
-	iv->disc_d=d_integer;
+	/*iv->disc_d=d_integer;
 	iv->data_vardec.u_integer_dec=iid;
 	
 	//printf("Inserted a new integer var: %s\n", iv->data_vardec.u_integer_dec->id); 
@@ -51,7 +52,7 @@ is_vardec* insert_character_dec(char* id)
         is_character_dec* icd=(is_character_dec*)malloc(sizeof(is_character_dec));
 
         icd->id=(char*)strdup(id);  /* Por precaucao. Seria apenas necessario copiar o ponteiro, pois o strdup ja foi feito atras*/
-        iv->disc_d=d_character;
+       /* iv->disc_d=d_character;
         iv->data_vardec.u_character_dec=icd;
 
 	//printf("Inserted a new char var: %s\n", iv->data_vardec.u_character_dec->id);
@@ -65,7 +66,7 @@ is_vardec* insert_double_dec(char* id)
         is_double_dec* idd=(is_double_dec*)malloc(sizeof(is_double_dec));
 
         idd->id=(char*)strdup(id);  /* Por precaucao. Seria apenas necessario copiar o ponteiro, pois o strdup ja foi feito atras*/
-        iv->disc_d=d_double;
+       /* iv->disc_d=d_double;
         iv->data_vardec.u_double_dec=idd;
 
 	//printf("Inserted a new double var: %s\n", iv->data_vardec.u_double_dec->id);
@@ -103,6 +104,6 @@ is_statement* insert_write_statement(char* id)
 	return is;
 	
 }
-
+*/
 
 

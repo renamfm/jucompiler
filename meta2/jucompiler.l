@@ -3,8 +3,9 @@
 	// Sergio Machado 2017265620
 
 %{
-	//#include <stdlib.h>
-	//#include <string.h>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
 	#include "y.tab.h"
 	//#include "functions.h"
 
@@ -50,7 +51,7 @@ number              {digit0}(({digit0}|"_")*{digit0})*
 <COMMENT2>\n|\r|\r\n									{BEGIN 0; ADDLINE;}
 <COMMENT2>.												{ADDCOL;}
 
-true|false												{if(flag==1){printf("BOOLLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){return BOOLLIT;}}
+true|false												{if(flag==1){printf("BOOLLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){yylval.id = strdup(yytext); return BOOLLIT;}}
 "&&"													{if(flag==1){printf("AND\n");} ADDCOL;if(flag == 2){return AND;}}
 "="														{if(flag==1){printf("ASSIGN\n");} ADDCOL; if(flag == 2){return ASSIGN;}}
 "*"														{if(flag==1){printf("STAR\n");} ADDCOL; if(flag == 2){return STAR;}}
@@ -96,11 +97,11 @@ while													{if(flag==1){printf("WHILE\n");} ADDCOL; if(flag == 2){return 
 
 "++"|"--"|null|Integer|System|abstract|continue|switch|assert|default|package|synchronized|do|goto|private|for|new|this|break|implements|protected|throw|byte|import|throws|case|enum|instanceof|transient|catch|extends|short|try|char|final|interface|finally|long|strictfp|volatile|const|float|native|super				{if(flag==1){printf("RESERVED(%s)\n", yytext);} ADDCOL; if(flag == 2){return RESERVED;}}
 
-{letter}({letter}|{digit0})*						    {if(flag==1){printf("ID(%s)\n", yytext);} ADDCOL; if(flag == 2){return ID;}}									
-0|({digit}{digit0}*(_+{digit0}+)*)						{if(flag==1){printf("INTLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){return INTLIT;}}
-{number}"."{number}?((e|E)("+"|"-")?{number})?          {if(flag==1){printf("REALLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){return REALLIT;}}
-"."{number}((e|E)("+"|"-")?{number})?                   {if(flag==1){printf("REALLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){return REALLIT;}}
-{number}(e|E)("+"|"-")?{number}                         {if(flag==1){printf("REALLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){return REALLIT;}}
+{letter}({letter}|{digit0})*						    {if(flag==1){printf("ID(%s)\n", yytext);} ADDCOL; if(flag == 2){yylval.id = strdup(yytext); return ID;}}									
+0|({digit}{digit0}*(_+{digit0}+)*)						{if(flag==1){printf("INTLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){yylval.id = strdup(yytext);return INTLIT;}}
+{number}"."{number}?((e|E)("+"|"-")?{number})?          {if(flag==1){printf("REALLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){yylval.id = strdup(yytext);return REALLIT;}}
+"."{number}((e|E)("+"|"-")?{number})?                   {if(flag==1){printf("REALLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){yylval.id = strdup(yytext);return REALLIT;}}
+{number}(e|E)("+"|"-")?{number}                         {if(flag==1){printf("REALLIT(%s)\n", yytext);} ADDCOL; if(flag == 2){yylval.id = strdup(yytext);return REALLIT;}}
 
 .														{printf("Line %d, col %d: illegal character (%s)\n", currentLine, currentCol, yytext); ADDCOL;}
 
@@ -126,11 +127,13 @@ int main(int argc,char* argv[]){
 		}
 		else if(strcmp(argv[1], "-e2") == 0){
 			//erros sintaticos e lexicais
+			yyparse();
 		}
 	}
-
-	//erros sintaticos e lexicais
-	yyparse();
+	else{
+		//erros sintaticos e lexicais
+		yyparse();
+	}
 
 	free(str);
 	return 0;
@@ -141,5 +144,5 @@ int yywrap(){
 }
 
 void yyerror(char *msg) {
-    printf("%s", msg);
+    printf("%s\n", msg);
 }

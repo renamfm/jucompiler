@@ -1,7 +1,7 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
 //#include "functions.h"
 //#include "y.tab.h"
 
@@ -13,16 +13,16 @@ Program *programa:
 Declarations *declaracao;
 MethodDeclaration *declaracaoMetodo;
 FieldDeclaration *declaracaoCampo;
-CommaOrId *virgulaOuId;                     
+CommaId *virgulaId;                     
 Type *tipo;
 MethodHeader *cabecalhoMetodo;
 FormalParams *parametrosFormais;
-CommaOrTypeOrId *virgulaOuTipoOuId;
+CommaTypeId *virgulaTipoId;
 MethodBody *corpoMetodo;
 StatemOrVardec *VardecOuStatement;
 Statements *singleStatement;
 MethodInvocation *invacacaoMetodo;
-CommaOrExpr *virgulaOuExpr;
+CommaExpr *virgulaExpr;
 Assignment *atribuicao;
 Expr *expressao;
 */
@@ -33,49 +33,64 @@ Expr *expressao;
 %token SEMICOLON ARROW LSHIFT RSHIFT XOR BOOL CLASS DOTLENGTH DOUBLE ELSE IF 
 %token INT PRINT PARSEINT PUBLIC RETURN STATIC STRING VOID WHILE RESERVED
 
-/*
+
+
 %type <p>Program
 %type <dec>Declarations
-%type <mdec>MethodDeclaration
-%type <cmid>CommaOrID
+%type <mdec>MethodDecl
+%type <cmid>CommaID
 %type <tp>Type
 %type <mh>MethodHeader
 %type <fpm>FormalParams
-%type <cmtid>CommaOrTypeOrID
+%type <cmtid>CommaTypeID
 %type <mbd>MethodBody
 %type <stvd>StatementOrVardecl
 %type <st>Statements
 %type <miv>MethodInvocation
-%type <tp>CommaOrExpr
+%type <tp>CommaExpr
 %type <asgn>Assignment
 %type <expr>Expr
-*/
+%type <id>ID
+
 
 %union{
 	/*Program *p:
 	Declarations *dec;
 	MethodDeclaration *mdec;
 	FieldDeclaration *fdec;
-	CommaOrId *cmid;
+	CommaId *cmid;
 	Type *tp;
 	MethodHeader *mh;
 	FormalParams *fpm;
-	CommaOrTypeOrId cmtid;
+	CommaTypeId cmtid;
 	MethodBody *mbd;
 	StatemOrVardec *stvd;
 	Statements *st;
 	MethodInvocation *miv;
-	CommaOrExpr *cmexpr;
+	CommaExpr *cmexpr;
 	Assignment *asgn;
 	Expr *expr;*/
-    //char *id;
+    char *id;
 }
+
+%right ASSIGN
+%left OR
+%left AND
+%left XOR
+%left EQ GE LE LT GT NE
+%left LSHIFT RSHIFT
+%left STAR DIV MOD
+%left NOT MINUS PLUS
+%left LPAR RPAR LSQ RSQ
+
+%nonassoc ELSE
+
 
 %%
 
-Program: CLASS ID LBRACE Declarations RBRACE    {printf("Program\n");}
+Program: CLASS ID LBRACE Declarations RBRACE    {printf("Program\n"); printf("Id(%s)\n", $2);}
 
-Declarations: /*empty*/                       {;}      
+Declarations: /*empty*/                       {;}     
     | Declarations MethodDecl                 {printf("Declarations\n");}
     | Declarations FieldDecl                  {printf("Declarations\n");}
     | Declarations SEMICOLON                  {printf("Declarations\n");}
@@ -84,12 +99,11 @@ Declarations: /*empty*/                       {;}
 MethodDecl: PUBLIC STATIC MethodHeader MethodBody   {printf("MethodDecl\n");}
     ;
 
-FieldDecl: PUBLIC STATIC Type ID CommaOrID SEMICOLON  {printf("FieldDecl\n");}
+FieldDecl: PUBLIC STATIC Type ID CommaID SEMICOLON  {printf("FieldDecl\n");}
     ;
 
-CommaOrID: /*empty*/      {;} 
-    | CommaOrID COMMA     {printf("Comma\n");}
-    | CommaOrID ID        {printf("ID\n");}
+CommaID: /*empty*/      {;} 
+    | CommaID COMMA ID      {printf("Comma\n Id(%s)\n", $3);}
     ;
 
 Type: BOOL    {printf("BOOL\n");}
@@ -103,14 +117,12 @@ MethodHeader: Type ID LPAR FormalParams RPAR      {printf("MethodHeader\n");}
     | VOID ID LPAR RPAR                           {printf("MethodHeader\n");}
     ;
 
-FormalParams: Type ID CommaOrTypeOrID   {printf("FormalParams\n");}
+FormalParams: Type ID CommaTypeID   {printf("FormalParams\n");}
     | STRING LSQ RSQ ID                 {printf("FormalParams\n");}
     ;
 
-CommaOrTypeOrID: /*empty*/      {;}
-    | CommaOrTypeOrID COMMA     {printf("COMMA\n");}
-    | CommaOrTypeOrID Type      {printf("Type\n");}
-    | CommaOrTypeOrID ID        {printf("ID\n");}
+CommaTypeID: /*empty*/      {;}
+    | CommaTypeID COMMA Type ID    {printf("COMMA\n Type\n Id(%s)\n", $4);}
     ;
 
 MethodBody: LBRACE StatementOrVardecl RBRACE    {printf("MethodBody\n");}
@@ -121,12 +133,12 @@ StatementOrVardecl: /*empty*/         {;}
     | StatementOrVardecl VarDecl      {printf("VarDecl\n");}
     ;
 
-VarDecl: Type ID CommaOrID SEMICOLON    {printf("VarDecl\n");}
+VarDecl: Type ID CommaID SEMICOLON    {printf("VarDecl\n");}
     ;
 
 Statement: LBRACE Statements RBRACE                 {printf("Statement\n");}
-    | IF LPAR Expr RPAR Statement ELSE Statement    {printf("Statement\n");}
     | IF LPAR Expr RPAR Statement                   {printf("Statement\n");}
+    | IF LPAR Expr RPAR Statement ELSE Statement    {printf("Statement\n");}
     | WHILE LPAR Expr RPAR Statement                {printf("Statement\n");}
     | RETURN Expr SEMICOLON                         {printf("Statement\n");}
     | RETURN SEMICOLON                              {printf("Statement\n");}
@@ -138,23 +150,22 @@ Statement: LBRACE Statements RBRACE                 {printf("Statement\n");}
     | PRINT LPAR STRLIT RPAR SEMICOLON              {printf("Statement\n");}
     ;
 
-Statements: /*empty*/ 
+Statements: /*empty*/          {;}
     | Statements Statement    {printf("Statement\n");}
     ;
 
 MethodInvocation: ID LPAR RPAR          {printf("MethodInvocation\n");}
-    | ID LPAR Expr CommaOrExpr RPAR     {printf("MethodInvocation\n");}
+    | ID LPAR Expr CommaExpr RPAR     {printf("MethodInvocation\n");}
     ;
 
-CommaOrExpr: /*empty*/      {;}
-    | CommaOrExpr COMMA     {printf("COMMA\n");}
-    | CommaOrExpr Expr      {printf("Expr\n");}
+CommaExpr: /*empty*/      {;}
+    | CommaExpr COMMA Expr    {printf("COMMA\n Exp\n");}
     ;
 
 Assignment: ID ASSIGN Expr  {printf("Assignment\n");}
     ;
 
-ParseArgs: PARSEINT LPAR ID LSQ Expr RSQ LPAR   {printf("ParseArgs\n");}
+ParseArgs: PARSEINT LPAR ID LSQ Expr RSQ RPAR   {printf("ParseArgs\n");}
     ;
 
 Expr: Expr PLUS Expr     {printf("Expr\n");}

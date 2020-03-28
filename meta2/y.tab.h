@@ -150,25 +150,25 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 54 "jucompiler.y" /* yacc.c:1909  */
+#line 56 "jucompiler.y" /* yacc.c:1909  */
 
 	/*Program *p:
 	Declarations *dec;
 	MethodDeclaration *mdec;
 	FieldDeclaration *fdec;
-	CommaOrId *cmid;
+	CommaId *cmid;
 	Type *tp;
 	MethodHeader *mh;
 	FormalParams *fpm;
-	CommaOrTypeOrId cmtid;
+	CommaTypeId cmtid;
 	MethodBody *mbd;
 	StatemOrVardec *stvd;
 	Statements *st;
 	MethodInvocation *miv;
-	CommaOrExpr *cmexpr;
+	CommaExpr *cmexpr;
 	Assignment *asgn;
 	Expr *expr;*/
-    //char *id;
+    char *id;
 
 #line 174 "y.tab.h" /* yacc.c:1909  */
 };
