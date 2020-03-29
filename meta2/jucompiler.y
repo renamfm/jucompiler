@@ -1,12 +1,12 @@
 %{
-//#include <stdio.h>
+#include <stdio.h>
 //#include <stdlib.h>
 //#include <string.h>
 //#include "functions.h"
 //#include "y.tab.h"
 
 int yylex (void);
-void yyerror (const char *s);
+void yyerror (char *s);
 
 /*
 Program *programa:
@@ -88,114 +88,118 @@ Expr *expressao;
 
 %%
 
-Program: CLASS ID LBRACE Declarations RBRACE    {printf("Program\n"); printf("Id(%s)\n", $2);}
+Program: CLASS ID LBRACE Declarations RBRACE    {/*printf("Program\n"); printf("Id(%s)\n", $2)*/;}
 
 Declarations: /*empty*/                       {;}     
-    | Declarations MethodDecl                 {printf("Declarations\n");}
-    | Declarations FieldDecl                  {printf("Declarations\n");}
-    | Declarations SEMICOLON                  {printf("Declarations\n");}
+    | Declarations MethodDecl                 {/*printf("Declarations\n")*/;}
+    | Declarations FieldDecl                  {/*printf("Declarations\n")*/;}
+    | Declarations SEMICOLON                  {/*printf("Declarations\n")*/;}
     ;
 
-MethodDecl: PUBLIC STATIC MethodHeader MethodBody   {printf("MethodDecl\n");}
+MethodDecl: PUBLIC STATIC MethodHeader MethodBody   {/*printf("MethodDecl\n")*/;}
     ;
 
-FieldDecl: PUBLIC STATIC Type ID CommaID SEMICOLON  {printf("FieldDecl\n");}
+FieldDecl: PUBLIC STATIC Type ID CommaID SEMICOLON  {/*printf("FieldDecl\n")*/;}
+    | error SEMICOLON                               {/*printf("FieldDecl Error\n")*/;}
     ;
 
 CommaID: /*empty*/      {;} 
-    | CommaID COMMA ID      {printf("Comma\n Id(%s)\n", $3);}
+    | CommaID COMMA ID      {/*printf("Comma\n Id(%s)\n", $3)*/;}
     ;
 
-Type: BOOL    {printf("BOOL\n");}
-    | INT     {printf("INT\n");}
-    | DOUBLE  {printf("DOUBLE\n");}
+Type: BOOL    {/*printf("BOOL\n")*/;}
+    | INT     {/*printf("INT\n")*/;}
+    | DOUBLE  {/*printf("DOUBLE\n")*/;}
     ;
 
-MethodHeader: Type ID LPAR FormalParams RPAR      {printf("MethodHeader\n");}
-    | VOID ID LPAR FormalParams RPAR              {printf("MethodHeader\n");}
-    | Type ID LPAR RPAR                           {printf("MethodHeader\n");}
-    | VOID ID LPAR RPAR                           {printf("MethodHeader\n");}
+MethodHeader: Type ID LPAR FormalParams RPAR      {/*printf("MethodHeader\n")*/;}
+    | VOID ID LPAR FormalParams RPAR              {/*printf("MethodHeader\n")*/;}
     ;
 
-FormalParams: Type ID CommaTypeID   {printf("FormalParams\n");}
-    | STRING LSQ RSQ ID                 {printf("FormalParams\n");}
+FormalParams:   /* empty */ {;}
+    | Type ID CommaTypeID   {/*printf("FormalParams\n")*/;}
+    | STRING LSQ RSQ ID             {/*printf("FormalParams\n")*/;}
     ;
 
 CommaTypeID: /*empty*/      {;}
-    | CommaTypeID COMMA Type ID    {printf("COMMA\n Type\n Id(%s)\n", $4);}
+    | CommaTypeID COMMA Type ID    {/*printf("COMMA\n Type\n Id(%s)\n", $4)*/;}
     ;
 
-MethodBody: LBRACE StatementOrVardecl RBRACE    {printf("MethodBody\n");}
+MethodBody: LBRACE StatementOrVardecl RBRACE    {/*printf("MethodBody\n")*/;}
     ;
 
 StatementOrVardecl: /*empty*/         {;}
-    | StatementOrVardecl Statement    {printf("Statement\n");}
-    | StatementOrVardecl VarDecl      {printf("VarDecl\n");}
+    | StatementOrVardecl Statement    {/*printf("Statement\n")*/;}
+    | StatementOrVardecl VarDecl      {/*printf("VarDecl\n")*/;}
     ;
 
-VarDecl: Type ID CommaID SEMICOLON    {printf("VarDecl\n");}
+VarDecl: Type ID CommaID SEMICOLON    {/*printf("VarDecl\n")*/;}
     ;
 
-Statement: LBRACE Statements RBRACE                 {printf("Statement\n");}
-    | IF LPAR Expr RPAR Statement                   {printf("Statement\n");}
-    | IF LPAR Expr RPAR Statement ELSE Statement    {printf("Statement\n");}
-    | WHILE LPAR Expr RPAR Statement                {printf("Statement\n");}
-    | RETURN Expr SEMICOLON                         {printf("Statement\n");}
-    | RETURN SEMICOLON                              {printf("Statement\n");}
-    | MethodInvocation SEMICOLON                    {printf("Statement\n");}
-    | Assignment SEMICOLON                          {printf("Statement\n");}
-    | ParseArgs SEMICOLON                           {printf("Statement\n");}
-    | SEMICOLON                                     {printf("Statement\n");}
-    | PRINT LPAR Expr RPAR SEMICOLON                {printf("Statement\n");}
-    | PRINT LPAR STRLIT RPAR SEMICOLON              {printf("Statement\n");}
+Statement: LBRACE Statements RBRACE                 {/*printf("Statement\n")*/;}
+    | IF LPAR Expr RPAR Statement                   {/*printf("Statement\n")*/;}
+    | IF LPAR Expr RPAR Statement ELSE Statement    {/*printf("Statement\n")*/;}
+    | WHILE LPAR Expr RPAR Statement                {/*printf("Statement\n")*/;}
+    | RETURN Expr SEMICOLON                         {/*printf("Statement\n")*/;}
+    | RETURN SEMICOLON                              {/*printf("Statement\n")*/;}
+    | MethodInvocation SEMICOLON                    {/*printf("Statement\n")*/;}
+    | Assignment SEMICOLON                          {/*printf("Statement\n")*/;}
+    | ParseArgs SEMICOLON                           {/*printf("Statement\n")*/;}
+    | SEMICOLON                                     {/*printf("Statement\n")*/;}
+    | PRINT LPAR Expr RPAR SEMICOLON                {/*printf("Statement\n")*/;}
+    | PRINT LPAR STRLIT RPAR SEMICOLON              {/*printf("Statement\n")*/;}
+    | error SEMICOLON                               {/*printf("Statement Error\n")*/;}
     ;
 
 Statements: /*empty*/          {;}
-    | Statements Statement    {printf("Statement\n");}
+    | Statements Statement    {/*printf("Statement\n")*/;}
     ;
 
-MethodInvocation: ID LPAR RPAR          {printf("MethodInvocation\n");}
-    | ID LPAR Expr CommaExpr RPAR     {printf("MethodInvocation\n");}
+MethodInvocation: ID LPAR RPAR        {/*printf("MethodInvocation\n")*/;}
+    | ID LPAR Expr CommaExpr RPAR     {/*printf("MethodInvocation\n")*/;}
+    | ID LPAR error RPAR              {/*printf("MethodInvocation Error\n")*/;}
     ;
 
 CommaExpr: /*empty*/      {;}
-    | CommaExpr COMMA Expr    {printf("COMMA\n Exp\n");}
+    | CommaExpr COMMA Expr    {/*printf("COMMA\n Exp\n")*/;}
     ;
 
-Assignment: ID ASSIGN Expr  {printf("Assignment\n");}
+Assignment: ID ASSIGN Expr  {/*printf("Assignment\n")*/;}
     ;
 
-ParseArgs: PARSEINT LPAR ID LSQ Expr RSQ RPAR   {printf("ParseArgs\n");}
+ParseArgs: PARSEINT LPAR ID LSQ Expr RSQ RPAR   {/*printf("ParseArgs\n")*/;}
+    | PARSEINT LPAR error RPAR                  {/*printf("ParseArgs Error\n")*/;}
     ;
 
-Expr: Expr PLUS Expr     {printf("Expr\n");}
-    | Expr MINUS Expr    {printf("Expr\n");}
-    | Expr STAR Expr     {printf("Expr\n");}
-    | Expr DIV Expr      {printf("Expr\n");}
-    | Expr MOD Expr      {printf("Expr\n");}
-    | Expr AND Expr      {printf("Expr\n");}
-    | Expr OR Expr       {printf("Expr\n");}
-    | Expr XOR Expr      {printf("Expr\n");}
-    | Expr LSHIFT Expr   {printf("Expr\n");}
-    | Expr RSHIFT Expr   {printf("Expr\n");}
-    | Expr EQ Expr       {printf("Expr\n");}
-    | Expr GE Expr       {printf("Expr\n");}
-    | Expr GT Expr       {printf("Expr\n");}
-    | Expr LE Expr       {printf("Expr\n");}
-    | Expr LT Expr       {printf("Expr\n");}
-    | Expr NE Expr       {printf("Expr\n");}
-    | MINUS Expr         {printf("Expr\n");}
-    | NOT Expr           {printf("Expr\n");}
-    | PLUS Expr          {printf("Expr\n");}
-    | LPAR Expr RPAR     {printf("Expr\n");}
-    | MethodInvocation   {printf("Expr\n");}
-    | Assignment         {printf("Expr\n");}
-    | ParseArgs          {printf("Expr\n");}
-    | ID                 {printf("Expr\n");}
-    | ID DOTLENGTH       {printf("Expr\n");}
-    | INTLIT             {printf("Expr\n");}
-    | REALLIT            {printf("Expr\n");}
-    | BOOLLIT            {printf("Expr\n");}
+Expr: Expr PLUS Expr     {/*printf("Expr\n")*/;}
+    | Expr MINUS Expr    {/*printf("Expr\n")*/;}
+    | Expr STAR Expr     {/*printf("Expr\n")*/;}
+    | Expr DIV Expr      {/*printf("Expr\n")*/;}
+    | Expr MOD Expr      {/*printf("Expr\n")*/;}
+    | Expr AND Expr      {/*printf("Expr\n")*/;}
+    | Expr OR Expr       {/*printf("Expr\n")*/;}
+    | Expr XOR Expr      {/*printf("Expr\n")*/;}
+    | Expr LSHIFT Expr   {/*printf("Expr\n")*/;}
+    | Expr RSHIFT Expr   {/*printf("Expr\n")*/;}
+    | Expr EQ Expr       {/*printf("Expr\n")*/;}
+    | Expr GE Expr       {/*printf("Expr\n")*/;}
+    | Expr GT Expr       {/*printf("Expr\n")*/;}
+    | Expr LE Expr       {/*printf("Expr\n")*/;}
+    | Expr LT Expr       {/*printf("Expr\n")*/;}
+    | Expr NE Expr       {/*printf("Expr\n")*/;}
+    | MINUS Expr         {/*printf("Expr\n")*/;}
+    | NOT Expr           {/*printf("Expr\n")*/;}
+    | PLUS Expr          {/*printf("Expr\n")*/;}
+    | LPAR Expr RPAR     {/*printf("Expr\n")*/;}
+    | MethodInvocation   {/*printf("Expr\n")*/;}
+    | Assignment         {/*printf("Expr\n")*/;}
+    | ParseArgs          {/*printf("Expr\n")*/;}
+    | ID                 {/*printf("Expr\n")*/;}
+    | ID DOTLENGTH       {/*printf("Expr\n")*/;}
+    | INTLIT             {/*printf("Expr\n")*/;}
+    | REALLIT            {/*printf("Expr\n")*/;}
+    | BOOLLIT            {/*printf("Expr\n")*/;}
+    | LPAR error RPAR    {/*printf("Expr Error\n")*/;}
     ;
 
 %%

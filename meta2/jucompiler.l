@@ -18,6 +18,7 @@
 	int currentLine = 1, currentCol = 1;
 	int commentLine=1, commentCol = 1;
 	int stringLine = 1, stringCol = 1;
+	int activeString = 0;
 
 %}
 
@@ -33,8 +34,8 @@ number              {digit0}(({digit0}|"_")*{digit0})*
 " "|\f|\t												{ADDCOL;}
 \n|\r|\r\n												{ADDLINE;}
 
-\"														{BEGIN STRING;strcpy(str, ""); stringLine = currentLine, stringCol = currentCol; ADDCOL;}
-<STR>\"													{if(flag==1 && flagInvalidChar==0){printf("STRLIT(\"%s\")\n", str);} BEGIN 0; flagInvalidChar=0; ADDCOL;}
+\"														{BEGIN STR;strcpy(str, ""); stringLine = currentLine, stringCol = currentCol; ADDCOL; }
+<STR>\"													{if(flag==1 && flagInvalidChar==0){printf("STRLIT(\"%s\")\n", str);} BEGIN 0; ADDCOL; activeString = 1; yytext=str; yyleng=strlen(yytext)+2; if(flag==2 && flagInvalidChar==0){return STRLIT;};}
 <STR>\n|\r												{printf("Line %d, col %d: unterminated string literal\n", stringLine, stringCol); BEGIN 0; flagInvalidChar=0; ADDLINE;}
 <STR>\\(f|n|r|t|\\|\")									{strcat(str, yytext); ADDCOL;}
 <STR>\\.|\\												{flagInvalidChar=1; printf("Line %d, col %d: invalid escape sequence (%s)\n", currentLine, currentCol, yytext); ADDCOL;}
@@ -127,6 +128,7 @@ int main(int argc,char* argv[]){
 		}
 		else if(strcmp(argv[1], "-e2") == 0){
 			//erros sintaticos e lexicais
+			flag = 2;
 			yyparse();
 		}
 	}
@@ -143,6 +145,12 @@ int yywrap(){
 	return 1;
 }
 
-void yyerror(char *msg) {
-    printf("%s\n", msg);
+void yyerror(char *s) {
+	if(activeString == 0){
+		printf("Line %d, col %d: %s: %s\n", currentLine, currentCol - yyleng, s, yytext);
+	}else{
+		printf("Line %d, col %d: %s: \"%s\"\n", currentLine, currentCol - yyleng, s, yytext);
+		activeString = 0;
+	}
+    
 }

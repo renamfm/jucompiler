@@ -1,57 +1,264 @@
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
 
-typedef struct _s9 {
+typedef struct integer{
+    char *id;
+}Integer;
+
+typedef struct float32{ //Double? sei la so copiei memo fodasse :(
+    char *id;
+}Float_32;
+
+typedef struct _bolean{
         char* id;
-}is_write_statement;
+}Bool;
 
-/*NOTA! Podia simplificar-se, mas mantemos as convencoes para demonstrar o conceito*/
-typedef enum {d_write} disc_write;
+typedef struct _string{
+        char* id;
+}String;
 
-typedef struct _s8 {
-        disc_write disc_d;
+typedef struct _strlit{
+        char* strlit;
+}Strlit;
+
+typedef enum{Intlit, Reallit, Boolit, Id}lit_type;
+typedef struct _someLit{
+        lit_type type;
+        char *id;
+}
+
+typedef struct _operation1{
+    int t;
+    struct expr* operation;
+}Operador_1;
+
+typedef enum{Plus, Minus, Star, Div, Mod, And, Or, Xor, Lshift, Rshift, Eq, Ge, Gt, Le, Lt, Ne }op_type;
+typedef struct _operation2{
+        op_type type;
+        struct expr* operation1;
+        struct expr* operation2;
+}Operation2;
+
+
+/*
+typedef enum{is_operation2, is_operation1, is_lit, is_call}
+typedef struct _expr{
+        expr_type type;
         union{
-                is_write_statement* u_write_statement;
-        } data_statement;
-} is_statement;
+                Operation2* op2;
+                Operation1* op1;
+                SomeLit* lit;
+                struct _call* call;
+        }t_expr;
+}Expr;
 
-typedef struct _s7 {
-        is_statement* val;
-        struct _s7* next;
-} is_statement_list;
+typedef struct _call{
+        char* funcName;
+        Expr* expr;
+        struct _call* next;
+}Call;
 
-typedef struct _s4 {
+
+//ParseArgs
+typedef struct _parseArgs{
+        Expr* expr;
+}ParseArgs;
+
+//Assignment
+typedef struct{
+        Expr* expr;
+}Assignment;
+
+//CommaExpr
+typedef struct _commaExpr{
+        Expr* expr;
+        struct _commaExpr* next;
+}CommaExpr;
+
+//MethodInvocation
+typedef struct {
+        CommaExpr* commaExpr;
+}MethodInvocation;
+
+//Statement
+typedef struct _statements{
+        Statement* statement;
+        struct _statement* next;
+}Statements;
+
+//MiddleStatement
+typedef struct _middleStatement{
+        Statement *statement;
+}MiddleStatement;
+
+typedef struct _blockElse{
+        Expr* expr;
+        struct _statement* statement;
+        MiddleStatement* middleState;
+}BlockElse;
+
+//ExprState
+typedef struct _exprState{
+        Expr* expr;
+        struct _statement* statement;
+}ExprState;
+*/
+
+typedef struct expr{
+        //
+}Expr;
+
+typedef struct assignStat{
         char* id;
-} is_integer_dec;
+        Expr* expr;
+}Assign;
 
-typedef struct _s5 {
+typedef struct parseArgsStat{
         char* id;
-} is_character_dec;
+        Expr* expr;
+}ParseArgs;
 
-typedef struct _s6 {
+typedef enum{is_exp, is_strlit} print_type;
+typedef struct callStat{
+        print_type type;
+        union{
+                Expr* exp;
+                Strlit* strlit;
+        }type;
+}Print;
+
+typedef struct callStat{
         char* id;
-} is_double_dec;
+        Expr* expr;
+        Expr* next; //call?
+}Call;
 
-typedef enum {d_integer, d_character, d_double} disc_vardec;
+typedef struct returnStat{
+        Expr* expr;
+}Return;
 
-typedef struct _s3 {
-        disc_vardec disc_d;
-        union{                  /* NOTA! Esta parte pode simplificar para ficar apenas um campo a char*. Mantemos assim para mostrar os metodo "comum"*/
-                is_integer_dec* u_integer_dec;
-                is_character_dec* u_character_dec;
-                is_double_dec* u_double_dec;
-        }data_vardec;
-} is_vardec;
+typedef struct whileStat{
+        Expr* expr;
+        //ver se statements devem ser block
+        struct statement* stat;
+}While;
+
+typedef struct ifStat{
+        Expr* expr;
+        //ver se statements devem ser block
+        struct statement* stat;
+        struct statement* ElseStat;
+}If;
+
+//voltar a ver este
+typedef struct block{
+        int n_statements //contar no. statements
+        //?
+}Block;
+
+//Statement---Statement esta mal ha mais repetiçoes
+typedef enum{is_block, is_if, is_while, is_return, is_assign, is_methodInv, is_parseArgs, is_print} statement_type;
+typedef struct statement{
+        statement_type type;
+        union{  
+                Block* block;
+                If* ifStat;
+                While* whileStat;
+                Return* returnStat;
+                Call* callStat;
+                Print* printStat;
+                ParseArgs* parseArgsStat;
+                Assign* assignStat;                
+        }stat;
+}Statement;
+
+//Vardec
+typedef struct _vardcl{
+        CommaID* commaID;
+}VarDecl;
+
+//StatementOrVardec
+typedef enum{is_statement, is_vardec}st_or_vadec_type;
+typedef struct statement_or_vadec{
+        st_or_vadec_type type;
+        union{
+                Statement* statement;
+                VarDecl* vardec;
+        }stOrVd;
+        struct statement_or_vadec *next;
+}StatementOrVardec;
+
+//ComaTypeID
+typedef struct comma_type_id{
+        int type;
+        struct comma_type_id* next;
+}CommaTypeID;
+
+//CommaID
+typedef struct comma_id{
+        struct comma_id* next;
+}CommaID;
+
+//MethodBody
+typedef struct method_body{
+        StatementOrVardec* stOrVardec;
+}MethodBody;
+
+//Formal Params
+typedef struct formal_params{
+        int type;
+        CommaTypeID* commaTypeId;
+}FormalParams;
 
 
-typedef struct _s2 {
-        is_vardec* val;
-        struct _s2* next;
-} is_vardec_list;
+//MethodHeader
+typedef enum{is_FormalOnly, is_FormalAndType} method_header_type;
 
-typedef struct _s1 {
-    is_vardec_list* vlist;
-    is_statement_list* slist;
-} is_program;
+typedef struct formal_and_type{
+        int type;
+        FormalParams* formalParams;
+}FormalAndType;
+
+typedef struct method_header{
+        method_header_type type;
+        union{
+                FormalAndType* formalnType;
+                FormalParams* formalParams;
+        }mhs;
+}MethodHeader;
+
+
+//FieldDecl
+typedef struct field_decl{
+        int type;
+        CommaID* commaID;
+}FieldDecl;
+
+
+//MethodDecl
+typedef struct method_decl{
+        MethodHeader* header;
+        MethodBody* body;
+}MethodDecl;
+
+//check
+//Declaration
+typedef enum {is_methodDecl, is_fieldDecl} dec_type;
+
+typedef struct declaration{
+        dec_type type;
+        union{
+                MethodDecl* methodDecl;
+                FieldDecl* fieldDecl;
+        }dcls;
+        struct declarations* next;
+}Declaration;
+
+//Program:
+typedef struct program{
+        Declaration* decList;
+}Program;
+
+
 
 #endif
