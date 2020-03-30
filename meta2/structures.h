@@ -1,13 +1,14 @@
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
 
+/*
 typedef struct integer{
     char *id;
 }Integer;
 
-typedef struct float32{ //Double? sei la so copiei memo fodasse :(
+typedef struct _double{
     char *id;
-}Float_32;
+}Double;
 
 typedef struct _bolean{
         char* id;
@@ -38,71 +39,6 @@ typedef struct _operation2{
         struct expr* operation1;
         struct expr* operation2;
 }Operation2;
-
-
-/*
-typedef enum{is_operation2, is_operation1, is_lit, is_call}
-typedef struct _expr{
-        expr_type type;
-        union{
-                Operation2* op2;
-                Operation1* op1;
-                SomeLit* lit;
-                struct _call* call;
-        }t_expr;
-}Expr;
-
-typedef struct _call{
-        char* funcName;
-        Expr* expr;
-        struct _call* next;
-}Call;
-
-
-//ParseArgs
-typedef struct _parseArgs{
-        Expr* expr;
-}ParseArgs;
-
-//Assignment
-typedef struct{
-        Expr* expr;
-}Assignment;
-
-//CommaExpr
-typedef struct _commaExpr{
-        Expr* expr;
-        struct _commaExpr* next;
-}CommaExpr;
-
-//MethodInvocation
-typedef struct {
-        CommaExpr* commaExpr;
-}MethodInvocation;
-
-//Statement
-typedef struct _statements{
-        Statement* statement;
-        struct _statement* next;
-}Statements;
-
-//MiddleStatement
-typedef struct _middleStatement{
-        Statement *statement;
-}MiddleStatement;
-
-typedef struct _blockElse{
-        Expr* expr;
-        struct _statement* statement;
-        MiddleStatement* middleState;
-}BlockElse;
-
-//ExprState
-typedef struct _exprState{
-        Expr* expr;
-        struct _statement* statement;
-}ExprState;
-*/
 
 typedef struct expr{
         //
@@ -227,38 +163,38 @@ typedef struct method_header{
         }mhs;
 }MethodHeader;
 
-
+*/
 //FieldDecl
 typedef struct field_decl{
+        /*
         int type;
         CommaID* commaID;
+        */
 }FieldDecl;
-
 
 //MethodDecl
 typedef struct method_decl{
+        /*
         MethodHeader* header;
         MethodBody* body;
+        */
 }MethodDecl;
 
-//check
 //Declaration
 typedef enum {is_methodDecl, is_fieldDecl} dec_type;
-
 typedef struct declaration{
         dec_type type;
         union{
                 MethodDecl* methodDecl;
                 FieldDecl* fieldDecl;
-        }dcls;
-        struct declarations* next;
+        }dec;
+        struct declaration* next;
 }Declaration;
 
 //Program:
 typedef struct program{
+        char* id;
         Declaration* decList;
 }Program;
-
-
 
 #endif

@@ -150,12 +150,12 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 56 "jucompiler.y" /* yacc.c:1909  */
+#line 57 "jucompiler.y" /* yacc.c:1909  */
 
-	/*Program *p:
-	Declarations *dec;
-	MethodDeclaration *mdec;
-	FieldDeclaration *fdec;
+	Program *p;
+	Declaration dec;
+    MethodDecl *mdec;
+	FieldDecl *fdec;/*
 	CommaId *cmid;
 	Type *tp;
 	MethodHeader *mh;

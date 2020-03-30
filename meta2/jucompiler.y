@@ -1,18 +1,17 @@
 %{
 #include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include "functions.h"
-//#include "y.tab.h"
+#include <stdlib.h>
+#include <string.h>
+#include "functions.h"
+#include "y.tab.h"
 
 int yylex (void);
 void yyerror (char *s);
 
-/*
-Program *programa:
-Declarations *declaracao;
-MethodDeclaration *declaracaoMetodo;
-FieldDeclaration *declaracaoCampo;
+Program *programa;
+Declaration *declaracao;
+MethodDecl *declaracaoMetodo;
+FieldDecl *declaracaoCampo;/*
 CommaId *virgulaId;                     
 Type *tipo;
 MethodHeader *cabecalhoMetodo;
@@ -38,6 +37,8 @@ Expr *expressao;
 %type <p>Program
 %type <dec>Declarations
 %type <mdec>MethodDecl
+%type <fdec>FieldDecl
+/*
 %type <cmid>CommaID
 %type <tp>Type
 %type <mh>MethodHeader
@@ -49,15 +50,15 @@ Expr *expressao;
 %type <miv>MethodInvocation
 %type <tp>CommaExpr
 %type <asgn>Assignment
-%type <expr>Expr
+%type <expr>Expr*/
 %type <id>ID
 
 
 %union{
-	/*Program *p:
-	Declarations *dec;
-	MethodDeclaration *mdec;
-	FieldDeclaration *fdec;
+	Program *p;
+	Declaration dec;
+    MethodDecl *mdec;
+	FieldDecl *fdec;/*
 	CommaId *cmid;
 	Type *tp;
 	MethodHeader *mh;
@@ -77,30 +78,31 @@ Expr *expressao;
 %left OR
 %left AND
 %left XOR
-%left EQ GE LE LT GT NE
+%left EQ NE
+%left LT GT LE GE    
 %left LSHIFT RSHIFT
+%left PLUS MINUS
 %left STAR DIV MOD
-%left NOT MINUS PLUS
+%left NOT  
 %left LPAR RPAR LSQ RSQ
 
 %nonassoc ELSE
 
-
 %%
 
-Program: CLASS ID LBRACE Declarations RBRACE    {/*printf("Program\n"); printf("Id(%s)\n", $2)*/;}
+Program: CLASS ID LBRACE Declarations RBRACE    {$$=programa=create_program($2,$4);}
 
-Declarations: /*empty*/                       {;}     
-    | Declarations MethodDecl                 {/*printf("Declarations\n")*/;}
-    | Declarations FieldDecl                  {/*printf("Declarations\n")*/;}
-    | Declarations SEMICOLON                  {/*printf("Declarations\n")*/;}
+Declarations: /*empty*/                       {$$=NULL;}
+    | Declarations MethodDecl                 {$$=declaracao=create_dec_method($1,$2);}
+    | Declarations FieldDecl                  {$$=declaracao=create_dec_field($1,$2);}
+    | Declarations SEMICOLON                  {;}
     ;
 
-MethodDecl: PUBLIC STATIC MethodHeader MethodBody   {/*printf("MethodDecl\n")*/;}
+MethodDecl: PUBLIC STATIC MethodHeader MethodBody   {$$=declaracaoMetodo=create_methodDecl();}
     ;
 
-FieldDecl: PUBLIC STATIC Type ID CommaID SEMICOLON  {/*printf("FieldDecl\n")*/;}
-    | error SEMICOLON                               {/*printf("FieldDecl Error\n")*/;}
+FieldDecl: PUBLIC STATIC Type ID CommaID SEMICOLON  {$$=declaracaoMetodo=create_fieldDecl();}
+    | error SEMICOLON                               {;}
     ;
 
 CommaID: /*empty*/      {;} 
