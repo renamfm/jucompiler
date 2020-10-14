@@ -74,3 +74,4 @@ void check_length_statement(AST_pointer node, table_pointer func_table, char* op
 void check_if_statement(AST_pointer node, table_pointer func_table, char* operation);
 int bits(long x);
 char* retirarUnderscores(char* number);
+void check_xor_operation(AST_pointer node, table_pointer func_table, char* operation);

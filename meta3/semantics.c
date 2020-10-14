@@ -293,7 +293,7 @@ void check_statement(AST_pointer node, table_pointer func_table, int is_Call){
             check_logical_operation(node, func_table, "||");
         }
         else if(strcmp(node->nome, "Xor") == 0){
-            check_logical_operation(node, func_table, "^");
+            check_xor_operation(node, func_table, "^");
         }
         else if(strcmp(node->nome, "Lshift") == 0){
             check_shift_operation(node, func_table, "<<");
@@ -339,9 +339,10 @@ void check_statement(AST_pointer node, table_pointer func_table, int is_Call){
 //nesta funcao vemos se a variavel existe se for ID
 //e anotamos a arvore
 int exists(AST_pointer node, table_pointer func_table, int is_Call){
+
     symbol_pointer temp = symbol_exists(func_table, node->valor, is_Call, node);
+
     //printf("\n%s - %s - %d\n",node->nome, node->valor, temp == NULL);
-    
     //se for o id e pk e uma variavel definida ou devia tar 
     if(strcmp(node->nome, "Id") == 0){
         //printf("dwqd:%s - %d - %d\n",temp->tipo, temp->data_type, is_Call);
@@ -504,17 +505,36 @@ void check_logical_operation(AST_pointer node, table_pointer func_table, char* o
     
 }
 
+void check_xor_operation(AST_pointer node, table_pointer func_table, char* operation){
+    check_statement(node->filho, func_table, 0);
+    check_statement(node->filho->irmao, func_table, 0);
+
+    if(strcmp(node->filho->anotar, "boolean") == 0 && strcmp(node->filho->irmao->anotar, "boolean") == 0){
+        node->anotar = (char*)malloc(strlen("boolean") * sizeof(char) + 1);
+        strcpy(node->anotar, "boolean");
+    }else if(strcmp(node->filho->anotar, "int") == 0 && strcmp(node->filho->irmao->anotar, "int") == 0){
+        node->anotar = (char*)malloc(strlen("int") * sizeof(char) + 1);
+        strcpy(node->anotar, "int");
+    }else{
+        //node->anotar = (char*)malloc(strlen("undef") * sizeof(char) + 1);
+        //strcpy(node->anotar, "undef");
+        node->anotar = (char*)malloc(strlen("undef") * sizeof(char) + 1);
+        strcpy(node->anotar, "undef");
+        printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",node->linha, node->coluna, operation, node->filho->anotar, node->filho->irmao->anotar);
+    }   
+}
+
 void check_shift_operation(AST_pointer node, table_pointer func_table, char* operation){
-    //check_statement(node->filho, func_table, 0);
-    //check_statement(node->filho->irmao, func_table, 0);
+    check_statement(node->filho, func_table, 0);
+    check_statement(node->filho->irmao, func_table, 0);
     //Parece que o shift nao tem tipo...
-    node->filho->anotar = (char*)malloc(strlen("none") * sizeof(char) + 1);
+    /*node->filho->anotar = (char*)malloc(strlen("none") * sizeof(char) + 1);
     strcpy(node->filho->anotar, "none");
 
     node->filho->irmao->anotar = (char*)malloc(strlen("none") * sizeof(char) + 1);
-    strcpy(node->filho->irmao->anotar, "none");
+    strcpy(node->filho->irmao->anotar, "none");*/
 
-
+    
     if(strcmp(node->filho->anotar, node->filho->irmao->anotar) == 0){
         node->anotar = (char*)malloc(strlen(node->filho->irmao->anotar) * sizeof(char) + 1);
         strcpy(node->anotar, node->filho->irmao->anotar);
@@ -551,7 +571,13 @@ void check_comparation_operation(AST_pointer node, table_pointer func_table, cha
     }else if((strcmp(node->filho->anotar, "int") == 0 && strcmp(node->filho->irmao->anotar, "double") == 0) || (strcmp(node->filho->anotar, "double") == 0 && strcmp(node->filho->irmao->anotar, "int") == 0)){
         node->anotar = (char*)malloc(strlen("boolean") * sizeof(char) + 1);
         strcpy(node->anotar, "boolean");
-    }else if(strcmp(node->filho->anotar, node->filho->irmao->anotar) != 0){
+
+    }else if(strcmp(id_to_type(node->filho->anotar), "String[]") == 0 && strcmp(id_to_type(node->filho->irmao->anotar), "String[]") == 0){
+        node->anotar = (char*)malloc(strlen("boolean") * sizeof(char) + 1);
+        strcpy(node->anotar, "boolean");
+        printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",node->linha, node->coluna, operation, id_to_type(node->filho->anotar), node->filho->irmao->anotar);
+    }
+    else if(strcmp(id_to_type(node->filho->anotar), node->filho->irmao->anotar) != 0){
         node->anotar = (char*)malloc(strlen("boolean") * sizeof(char) + 1);
         strcpy(node->anotar, "boolean");
         printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",node->linha, node->coluna, operation, id_to_type(node->filho->anotar), node->filho->irmao->anotar);
@@ -603,6 +629,7 @@ void check_assign_operation(AST_pointer node, table_pointer func_table, char* op
             }
         }
     }
+    
 }
 
 void check_parseArgs_statement(AST_pointer node, table_pointer func_table, char* operation){
@@ -639,6 +666,7 @@ void check_print_statement(AST_pointer node, table_pointer func_table, char* ope
 }
 
 void check_call_statement(AST_pointer node, table_pointer func_table, char* operation){
+    
     //int nArgs;
     //Verificar variaveis dentro de Call
     AST_pointer temp = node->filho;
@@ -647,6 +675,7 @@ void check_call_statement(AST_pointer node, table_pointer func_table, char* oper
         check_statement(temp, func_table, 1);
         temp = temp->irmao;
     }
+
     //funcao nao esta definida
     if(strcmp(node->filho->return_id, "undef") == 0){
         node->anotar = (char*)malloc(strlen("undef") * sizeof(char) + 1);
@@ -664,6 +693,7 @@ void check_call_statement(AST_pointer node, table_pointer func_table, char* oper
             strcpy(node->filho->return_id, "");
         }
     }
+  
 
 }
 
@@ -681,7 +711,7 @@ void check_if_statement(AST_pointer node, table_pointer func_table, char* operat
     
     if(node->filho->anotar != NULL){
         if(strcmp(node->filho->anotar, "boolean")!=0){
-            printf("Line %d, col %d: Incompatible type undef in %s statement\n", node->filho->linha, node->filho->coluna, operation);
+            printf("Line %d, col %d: Incompatible type %s in %s statement\n", node->filho->linha, node->filho->coluna, node->filho->anotar, operation);
         }
     }
 }

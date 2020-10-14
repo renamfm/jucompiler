@@ -176,12 +176,11 @@ void put_param(symbol_pointer symbol, param_pointer param){
 symbol_pointer get_symbol(table_pointer table, char* symbol_name, int is_Call, AST_pointer node){
     symbol_pointer temp = table->next_sym;
     //printf("\nfdz: %s-%d\n", symbol_name, is_Call == 1);
-    
+
 
     while(temp != NULL){
         int flag = 1;
-        //int flag2 = 1;
-        //printf("lets see:%s-%d\n", temp->nome, is_Call);
+        
         if(strcmp(temp->nome, symbol_name) == 0){
             if(is_Call == 1){
                 int funcParams = 0;
@@ -196,7 +195,7 @@ symbol_pointer get_symbol(table_pointer table, char* symbol_name, int is_Call, A
 
                 if(funcParams == nodeBrothers && funcParams > 0 && nodeBrothers > 0){
                     
-
+                        
                         param_pointer aux5 = temp->params;
                         AST_pointer aux4 =  node->irmao;
 
@@ -208,6 +207,7 @@ symbol_pointer get_symbol(table_pointer table, char* symbol_name, int is_Call, A
                             aux5 = aux5->next;
                             aux4 = aux4->irmao;
                         }
+                        
                         if(flag == 1){
                             
 
@@ -244,10 +244,12 @@ symbol_pointer get_symbol(table_pointer table, char* symbol_name, int is_Call, A
                 //printf("\ngande fidodio: %d-%d\n", 6, 6);
             }
         }
+        
         temp = temp->next;
     }
 
-      
+     
+     
   symbol_pointer temp5 = NULL;
    int t2 = 1;
     temp = table->next_sym;
@@ -295,13 +297,14 @@ symbol_pointer get_symbol(table_pointer table, char* symbol_name, int is_Call, A
         temp = temp->next;
     }
 
-
+ 
     if(is_Call ==1){
         if(t2 == 0){
             return create_symbol("ambiguous", "ambiguous", 0,0,0,NULL);
-        }else if(temp5!=NULL){
+        }else if(temp5!=NULL && temp != NULL){
             char declarations[MAX];
             strcpy(declarations, "");
+          
             param_pointer aux10 = temp->params;
 
             if(aux10 != NULL){
@@ -326,11 +329,13 @@ symbol_pointer get_symbol(table_pointer table, char* symbol_name, int is_Call, A
   symbol_pointer temp2 = NULL;
   int t1 = 1;
   temp = table->next_sym;
-    
+   
     while(temp != NULL){
         int flag2 = 1;
 
+       
         if(strcmp(temp->nome, symbol_name) == 0){
+            
             if(is_Call == 1){
                 int funcParams = 0;
                 int nodeBrothers = 0;
@@ -341,7 +346,7 @@ symbol_pointer get_symbol(table_pointer table, char* symbol_name, int is_Call, A
                 AST_pointer aux2 = node->irmao;
                 while (aux2 != NULL){nodeBrothers++;aux2=aux2->irmao;}
 
-
+             
                 if(funcParams == nodeBrothers && funcParams > 0 && nodeBrothers > 0){
 
                         
@@ -369,11 +374,11 @@ symbol_pointer get_symbol(table_pointer table, char* symbol_name, int is_Call, A
         }
         temp = temp->next;
     }
-
+  
     if(is_Call ==1){
         if(t1 == 0){
             return create_symbol("ambiguous", "ambiguous", 0,0,0,NULL);
-        }else if(temp2!=NULL){
+        }else if(temp2!=NULL && temp2 != NULL){
             char declarations[MAX];
             strcpy(declarations, "");
             param_pointer aux10 = temp2->params;
@@ -396,6 +401,7 @@ symbol_pointer get_symbol(table_pointer table, char* symbol_name, int is_Call, A
 
         }
     }
+    
     return NULL;
 }
 
@@ -405,6 +411,7 @@ symbol_pointer symbol_exists(table_pointer table, char* symbol_name, int is_Call
     if(aux != NULL){
         return aux;
     }else{
+        
         return get_symbol(global_table, symbol_name,is_Call, node);
     }
     return NULL;

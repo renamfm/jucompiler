@@ -526,6 +526,13 @@ int main(int argc,char* argv[]){
                 show_table(global_table);
                 print_tree_anoted(root, 0);          
             }
+		}else if(strcmp(argv[1], "-e3") == 0){
+			//analise semantica caso nao haja erros
+			flag = 2;
+			yyparse();
+            if(!containsErrors){
+                check_tree(root);
+            }
 		}
 	}
 	else{
